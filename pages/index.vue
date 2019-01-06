@@ -11,43 +11,22 @@
         <logo/>
         <vuetify-logo/>
       </div>
-      <v-card>
-        <v-card-title class="headline">Welcome to the Vuetify + Nuxt.js template</v-card-title>
-        <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>For more information on Vuetify, check out the <a
-            href="https://vuetifyjs.com"
-            target="_blank">documentation</a>.</p>
-          <p>If you have questions, please join the official <a
-            href="https://chat.vuetifyjs.com/"
-            target="_blank"
-            title="chat">discord</a>.</p>
-          <p>Find a bug? Report it on the github <a
-            href="https://github.com/vuetifyjs/vuetify/issues"
-            target="_blank"
-            title="contribute">issue board</a>.</p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank">Nuxt Documentation</a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank">Nuxt GitHub</a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer/>
-          <v-btn
-            color="primary"
-            flat
-            nuxt
-            to="/inspire">Continue</v-btn>
-        </v-card-actions>
-      </v-card>
+      <div class="xs10 offset-xs1">
+        <v-data-table :headers="tableHeaders" :items="teams" :disable-initial-sort="true" >
+          <template slot="items" slot-scope="props">
+            <td>{{ props.index+1 }}</td>
+            <td>{{ props.item.name }}</td>
+            <td class="text-xs-left">{{ props.item.game_played }}</td>
+            <td class="text-xs-left">{{ props.item.won }}</td>
+            <td class="text-xs-left">{{ props.item.draw }}</td>
+            <td class="text-xs-left">{{ props.item.lose }}</td>
+            <td class="text-xs-left">{{ props.item.goals_for }}</td>
+            <td class="text-xs-left">{{ props.item.goals_against }}</td>
+            <td class="text-xs-left">{{ props.item.goals_for - props.item.goals_against }}</td>
+            <td class="text-xs-left">{{ props.item.point }}</td>
+          </template>
+        </v-data-table>
+      </div>
     </v-flex>
   </v-layout>
 </template>
@@ -55,11 +34,58 @@
 <script>
 import Logo from '~/components/Logo.vue'
 import VuetifyLogo from '~/components/VuetifyLogo.vue'
+import { DB } from '@/services/fireinit'
+import { compareValues } from '@/ultilities/utils'
 
 export default {
   components: {
     Logo,
     VuetifyLogo
+  },
+  data() {
+    return {
+      season1: {},
+      tableHeaders: [
+        {
+          text: '#',
+          align: 'left',
+          sortable: false
+        },
+          {
+            text: 'Team',
+            align: 'left',
+            sortable: false,
+            value: 'name'
+          },
+          { text: 'PL', value: 'game_played' },
+          { text: 'W', value: 'won' },
+          { text: 'D', value: 'draw' },
+          { text: 'L', value: 'lose' },
+          { text: 'F', value: 'goals_for' },
+          { text: 'A', value: 'goals_against' },
+          { text: 'GD', value: 'GD' },
+          { text: 'Pts', value: 'point' }
+        ]
+    }
+  },
+  async asyncData({app, params, error}) {
+    const ref = DB.collection('seasons').where('active', '==', true);
+    let snap,data;
+    try {
+      snap = await ref.get();
+      if (snap.size > 0) {
+        data = snap.docs[0].data();
+      }
+      console.log(data);
+      // let idTeam = data.teams[0].id_team.data;
+      // console.log(idTeam);
+    } catch (e) {
+      console.error(e)
+    }
+    return {
+      seasone_name: data.name,
+      teams: data.teams.sort(compareValues('point', 'desc'))
+    };
   }
 }
 </script>
