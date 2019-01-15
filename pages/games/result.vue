@@ -34,7 +34,7 @@
                      @click=""
                      >
                      <v-list-tile-content>
-                       <v-list-tile-title class="text-xs-left" v-text="player.name"></v-list-tile-title>
+                       <v-list-tile-title class="text-xs-left"><span class="green--text text--darken-1">{{player.name}}</span> x {{player.goal}}</v-list-tile-title>
                      </v-list-tile-content>
 
                      <!-- <v-list-tile-avatar>
@@ -52,7 +52,8 @@
                      @click=""
                      >
                      <v-list-tile-content>
-                       <v-list-tile-title class="text-xs-right" v-text="player.name"></v-list-tile-title>
+                       <v-list-tile-title class="text-xs-right"><span class="green--text text--darken-1">{{player.name}}</span> x {{player.goal}}</v-list-tile-title>
+
                      </v-list-tile-content>
 
                      <!-- <v-list-tile-avatar>

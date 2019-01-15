@@ -94,8 +94,9 @@
         fixed: false,
         items: [
           { icon: 'apps', title: 'Table', to: '/' },
-          { icon: 'bubble_chart', title: 'Fixtures', to: '/games/fixtures' },
-          { icon: 'bubble_chart', title: 'Result', to: '/games/result' }
+          { icon: 'schedule', title: 'Fixtures', to: '/games/fixtures' },
+          { icon: 'assignment_turned_in', title: 'Result', to: '/games/result' },
+          { icon: 'rowing', title: 'Player Stats', to: '/players' }
         ],
         miniVariant: false,
         right: true,

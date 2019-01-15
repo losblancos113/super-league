@@ -8,7 +8,6 @@
       sm8
       md6>
       <div class="text-xs-center">
-        <logo/>
         <vuetify-logo/>
       </div>
       <div class="xs10 offset-xs1">
