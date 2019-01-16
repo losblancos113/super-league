@@ -74,8 +74,8 @@ module.exports = {
       //   })
       // }
     }
+  },
+  router: {
+    // middleware: 'router-path'
   }
-  // router: {
-  //   // middleware: 'router-path'
-  // }
 }

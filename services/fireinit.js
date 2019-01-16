@@ -21,7 +21,10 @@ db.settings({
   timestampsInSnapshots: true
 });
 
-// export const GoogleProvider = new firebase.auth.GoogleProvider();
+if (!firebase.apps.length) {
+  firebase.initializeApp(config)
+}
+export const GoogleProvider = new firebase.auth.GoogleAuthProvider();
 export const auth = firebase.auth();
 export const DB = db;
 export default firebase;
