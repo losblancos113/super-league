@@ -8,13 +8,18 @@
 </template>
 
 <script>
-  import firebase, {auth} from '~/services/fireinit'
+  import firebase, {auth, GoogleProvider} from '~/services/fireinit'
   export default {
     methods: {
       async googleSignUp () {
-        await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-        console.log('Finished Google login')
-        return location.reload()
+        // await auth.signInWithPopup(GoogleProvider)
+        // console.log('Finished Google login')
+        // return location.reload()
+        this.$store.dispatch('signInWithGoogle').then(() => {
+          console.log('inside then statement on login');
+        }).catch(e => {
+          console.log(e.message);
+        });
       }
     }
   }

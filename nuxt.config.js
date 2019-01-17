@@ -2,7 +2,7 @@ const pkg = require('./package')
 
 module.exports = {
   buildDir: '../functions/nuxt',
-  mode: 'universal',
+  mode: 'spa',
   publicPath : '/',
   /*
   ** Headers of the page
@@ -36,7 +36,8 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '@/plugins/vuetify'
+    '@/plugins/vuetify',
+    '@/plugins/fireauth'
   ],
 
   /*
