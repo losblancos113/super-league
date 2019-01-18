@@ -1,17 +1,14 @@
 <template>
-  <v-layout justify-center align-center>
-    <v-flex xs12 sm8>
-      <div class="mt-5">
-        <div v-if="!$store.state.user">
-          <login-form></login-form>
-        </div>
-        <div v-else class="flexWrapper align-center">
-          <h4 class="blue--text">You're logged in!</h4>
-          <v-btn icon class="blue white--text">
-            <v-icon>thumb_up</v-icon>
-          </v-btn>
-        </div>
-      </div>
+  <v-layout align-center justify-space-around row fill-height>
+    <v-flex xs12 sm6 md6 lg3>
+      <v-card nuxt="true" to="/admin/players">
+        <v-card-title primary-title><h3>Player Manager</h3></v-card-title>
+      </v-card>
+    </v-flex>
+    <v-flex xs12 sm6 md6 lg3>
+      <v-card nuxt="true" to="/admin/games">
+        <v-card-title primary-title><h3>Game Manager</h3></v-card-title>
+      </v-card>
     </v-flex>
   </v-layout>
 </template>
