@@ -21,6 +21,17 @@ db.settings({
   timestampsInSnapshots: true
 });
 
+db.enablePersistence()
+  .catch(function (err) {
+    if (err.code == 'failed-precondition') {
+      console.error(err);
+      // db = firebase.firestore();
+    } else if (err.code == 'unimplemented') {
+      console.error(err);
+      // db = firebase.firestore();
+    }
+  });
+
 if (!firebase.apps.length) {
   firebase.initializeApp(config)
 }

@@ -20,12 +20,12 @@
 
 <script>
   import LoginForm from '~/components/LoginForm';
-    export default {
-        name: "index",
-      components: {
-          LoginForm
-      }
+  export default {
+    name: "index",
+    components: {
+      LoginForm
     }
+  }
 </script>
 
 <style scoped>
