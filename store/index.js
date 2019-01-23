@@ -7,11 +7,15 @@ const createStore = () => {
   return new Vuex.Store({
     state: {
       counter: 0,
-      user: null
+      user: null,
+      teams: []
     },
     getters: {
       activeUser: (state, getters) => {
         return state.user
+      },
+      teamAvailable: (state, getters) => {
+        return state.teams
       }
     },
     mutations,

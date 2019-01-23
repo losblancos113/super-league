@@ -5,6 +5,9 @@ const mutations = {
   },
   setUser (state, payload) {
     state.user = payload
+  },
+  setTeamList (state, payload) {
+    state.teams = payload
   }
 }
 
