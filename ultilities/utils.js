@@ -29,5 +29,9 @@ let formatTimestamp = function (timestamp) {
   let m = moment(date);
   return m.format('YYYY-MM-DD hh:mm A');
 };
+let formatDate = function (date) {
+  let m = moment(date);
+  return m.format('YYYY-MM-DD hh:mm A');
+};
 
-export { compareValues, formatTimestamp };
+export { compareValues, formatTimestamp, formatDate };
