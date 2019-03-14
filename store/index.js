@@ -8,7 +8,8 @@ const createStore = () => {
     state: {
       counter: 0,
       user: null,
-      teams: []
+      teams: [],
+      indexDb: null
     },
     getters: {
       activeUser: (state, getters) => {

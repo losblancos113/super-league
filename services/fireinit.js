@@ -2,7 +2,7 @@ import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/database';
-
+import store from '@/store'
 if (!firebase.apps.length) {
   firebase.initializeApp({
     apiKey: "AIzaSyDHRV643GlgRPO8XORc0uJ6WJ6NE4xP9Dw",

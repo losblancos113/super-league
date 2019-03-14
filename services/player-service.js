@@ -10,3 +10,10 @@ export const addOrUpdatePlayer = (playerId, player) => {
     });
   }
 };
+
+export const getTeams = async (id) => {
+  const snap = await DB.collection('teams').doc(id).collection('players').get();
+  return snap.docs.map(doc => {
+    return {id: doc.id, data : doc.data()}
+  });
+}

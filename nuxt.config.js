@@ -77,6 +77,6 @@ module.exports = {
     }
   },
   router: {
-    // middleware: 'router-path'
+    middleware: ["admin-auth"]
   }
 }

@@ -1,4 +1,5 @@
 export default function ({ store, redirect, route }) {
+  console.log("this is router-auth");
   if (isLogin(store) && route.name === 'login') {
     return redirect('/admin')
   }

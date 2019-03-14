@@ -1,4 +1,3 @@
-import Vuex from 'vuex';
 const mutations = {
   increment(state) {
     state.counter++
@@ -8,6 +7,9 @@ const mutations = {
   },
   setTeamList (state, payload) {
     state.teams = payload
+  },
+  setIndexDb(state, payload) {
+    state.indexDb = payload
   }
 }
 

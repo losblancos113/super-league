@@ -32,18 +32,54 @@
                   <v-flex xs12 sm6 md6>
                     <v-text-field v-model="editedItem.id_season" label="Session"></v-text-field>
                   </v-flex>
-                  <v-flex xs12 sm6 md6>
+                  <v-flex xs12 sm12 md12>
                     <v-switch color="blue darken-2" v-model="editedItem.is_completed" label="Completed"></v-switch>
                   </v-flex>
                   <v-flex xs12 sm6 md6>
-                    <v-text-field v-model="editedItem.data.home.name" label="Home"></v-text-field>
+                    <v-combobox
+                      v-model="editedItem.data.home"
+                      :items="teams"
+                      items-text="`${data.item.name}`"
+                      chips
+                      label="Home"
+                      return-object
+                    >
+                      <template slot="selection" slot-scope="data">
+                        {{ data.item.name}}
+                      </template>
+                      <template slot="item" slot-scope="data">
+                        <v-list-tile-content>
+                          <v-list-tile-title v-html="`${data.item.name}`">
+                          </v-list-tile-title>
+                          <!--<v-list-tile-sub-title v-html="data.item.group"></v-list-tile-sub-title>-->
+                        </v-list-tile-content>
+                      </template>
+                    </v-combobox>
                   </v-flex>
                   <v-flex xs12 sm6 md6>
-                    <v-text-field v-model="editedItem.data.away.name" label="Away"></v-text-field>
+                    <v-combobox
+                      v-model="editedItem.data.away"
+                      :items="teams"
+                      items-text="`${data.item.name}`"
+                      chips
+                      label="Away"
+                      return-object
+                    >
+                      <template slot="selection" slot-scope="data">
+                        {{ data.item.name}}
+                      </template>
+                      <template slot="item" slot-scope="data">
+                        <v-list-tile-content>
+                          <v-list-tile-title v-html="`${data.item.name}`">
+                          </v-list-tile-title>
+                          <!--<v-list-tile-sub-title v-html="data.item.group"></v-list-tile-sub-title>-->
+                        </v-list-tile-content>
+                      </template>
+                    </v-combobox>
                   </v-flex>
                   <v-flex xs12 sm6 md6>
                     <v-menu
-                      v-model="date_picker"
+                      v-model="start_date_picker"
                       :close-on-content-click="false"
                       :nudge-right="40"
                       lazy
@@ -59,14 +95,14 @@
                         prepend-icon="event"
                         readonly
                       ></v-text-field>
-                      <v-date-picker v-model="editedItem.start" @input="date_picker = false"></v-date-picker>
+                      <v-date-picker v-model="editedItem.start" @input="start_date_picker = false"></v-date-picker>
                     </v-menu>
                   </v-flex>
                   <v-flex xs12 sm6 md6>
                     <v-dialog
                       ref="dialog"
-                      v-model="time_picker"
-                      :return-value.sync="time"
+                      v-model="start_time_picker"
+                      :return-value.sync="start_time"
                       persistent
                       lazy
                       full-width
@@ -74,22 +110,164 @@
                     >
                       <v-text-field
                         slot="activator"
-                        v-model="time"
+                        v-model="start_time"
                         label="Start time"
                         prepend-icon="access_time"
                         readonly
                       ></v-text-field>
                       <v-time-picker
-                        v-if="time_picker"
-                        v-model="time"
+                        v-if="start_time_picker"
+                        v-model="start_time"
                         full-width
                       >
                         <v-spacer></v-spacer>
-                        <v-btn flat color="primary" @click="time_picker = false">Cancel</v-btn>
-                        <v-btn flat color="primary" @click="$refs.dialog.save(time)">OK</v-btn>
+                        <v-btn flat color="primary" @click="start_time_picker = false">Cancel</v-btn>
+                        <v-btn flat color="primary" @click="$refs.dialog.save(start_time)">OK</v-btn>
                       </v-time-picker>
                     </v-dialog>
                   </v-flex>
+                  <v-flex xs12 sm6 md6>
+                    <v-menu
+                      v-model="end_date_picker"
+                      :close-on-content-click="false"
+                      :nudge-right="40"
+                      lazy
+                      transition="scale-transition"
+                      offset-y
+                      full-width
+                      min-width="290px"
+                    >
+                      <v-text-field
+                        slot="activator"
+                        v-model="editedItem.end"
+                        label="End date"
+                        prepend-icon="event"
+                        readonly
+                      ></v-text-field>
+                      <v-date-picker v-model="editedItem.end" @input="end_date_picker = false"></v-date-picker>
+                    </v-menu>
+                  </v-flex>
+                  <v-flex xs12 sm6 md6>
+                    <v-dialog
+                      ref="dialog2"
+                      v-model="end_time_picker"
+                      :return-value.sync="end_time"
+                      persistent
+                      lazy
+                      full-width
+                      width="290px"
+                    >
+                      <v-text-field
+                        slot="activator"
+                        v-model="end_time"
+                        label="End time"
+                        prepend-icon="access_time"
+                        readonly
+                      ></v-text-field>
+                      <v-time-picker
+                        v-if="end_time_picker"
+                        v-model="end_time"
+                        full-width
+                      >
+                        <v-spacer></v-spacer>
+                        <v-btn flat color="primary" @click="end_time_picker = false">Cancel</v-btn>
+                        <v-btn flat color="primary" @click="$refs.dialog2.save(end_time)">OK</v-btn>
+                      </v-time-picker>
+                    </v-dialog>
+                  </v-flex>
+                  <v-container grid-list-md xs12 sm12 md12 v-if="editedItem.is_completed">
+                    <v-layout wrap>
+                      <v-flex xs12 sm6 md6>
+                        <v-text-field min="0" type="number" v-model="editedItem.home_score"
+                                      label="Home score"></v-text-field>
+                      </v-flex>
+                      <v-flex xs12 sm6 md6>
+                        <v-text-field min="0" type="number" v-model="editedItem.away_score"
+                                      label="Away score"></v-text-field>
+                      </v-flex>
+                      <v-flex xs12 sm6 md6>
+                        <v-list>
+                          <v-list-tile
+                            v-for="(item, index) in editedItem.data.who_scored.home"
+                            :key="index"
+                            avatar
+                            @click=""
+                          >
+                            <v-list-tile-action>
+                              {{item.goal}}
+                            </v-list-tile-action>
+
+                            <v-list-tile-content>
+                              <v-list-tile-title v-text="item.name"></v-list-tile-title>
+                            </v-list-tile-content>
+                          </v-list-tile>
+                        </v-list>
+                        <v-btn id="btnAddHome" fab dark @click="openScoreDialog(editedItem.data.home.id_team, 'home')"
+                               color="indigo">
+                          <v-icon dark>add</v-icon>
+                        </v-btn>
+                      </v-flex>
+                      <v-flex xs12 sm6 md6>
+                        <v-list>
+                          <v-list-tile
+                            v-for="(item, index) in editedItem.data.who_scored.away"
+                            :key="index"
+                            avatar
+                            @click=""
+                          >
+                            <v-list-tile-action>
+                              {{item.goal}}
+                            </v-list-tile-action>
+
+                            <v-list-tile-content>
+                              <v-list-tile-title v-text="item.name"></v-list-tile-title>
+                            </v-list-tile-content>
+                          </v-list-tile>
+                        </v-list>
+                        <v-btn fab dark color="indigo" @click="openScoreDialog(editedItem.data.away.id_team, 'away')">
+                          <v-icon dark>add</v-icon>
+                        </v-btn>
+                      </v-flex>
+                      <v-dialog v-model="openDialogPlayer" persistent max-width="600px">
+                        <v-card>
+                          <v-card-title>
+                            <span class="headline">Home</span>
+                          </v-card-title>
+                          <v-card-text>
+                            <v-container grid-list-md>
+                              <v-layout wrap>
+                                <v-flex xs12 sm12 md6>
+                                  <v-combobox
+                                    v-model="selected_player"
+                                    :items="player_list"
+                                    item-text="data.name"
+                                    item-value="id"
+                                    label="Player"
+                                  ></v-combobox>
+                                </v-flex>
+                                <v-flex xs12 sm12 md6>
+                                  <v-text-field
+                                    label="xGoal"
+                                    placeholder="Goal"
+                                    solo
+                                    type="number"
+                                    min="0"
+                                    v-model="player_goal"
+                                  ></v-text-field>
+                                </v-flex>
+                              </v-layout>
+                            </v-container>
+                            <small>*indicates required field</small>
+                          </v-card-text>
+                          <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="blue darken-1" flat @click="addGoalByPlayer">Save</v-btn>
+                            <v-btn color="blue darken-1" flat @click="openDialogPlayer = false">Close</v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
+                    </v-layout>
+                  </v-container>
                 </v-layout>
               </v-container>
             </v-card-text>
@@ -128,13 +306,51 @@
   import {mapGetters, mapMutations} from 'vuex';
   import {DB} from '@/services/fireinit';
   import {formatTimestamp, formatDate} from '@/ultilities/utils';
+  import {getTeams} from '@/services/player-service';
+
+  // //indexedDB
+  // if (!('indexedDB' in window)) {
+  //   console.log('This browser doesn\'t support IndexedDB');
+  // }
+  // reloadTeamData(teams => {
+  //   console.log("teams size=" +teams.length);
+  // });
+  // let request = window.indexedDB.open('superleague', 1);
+  // let indexDB = null;
+  // request.onupgradeneeded = event => {
+  //   console.log("onupgradeneeded");
+  //   indexDB = event.target.result;
+  //   indexDB.createObjectStore('teams', {
+  //     autoIncrement: true,
+  //     keyPath: 'id'
+  //   });
+  // };
+  // request.onsuccess = function (event) {
+  //   indexDB = request.result;
+  //   console.log("success: " + indexDB);
+  // };
 
   export default {
     data() {
       return {
-        date_picker: false,
-        time: null,
-        time_picker: false,
+        editSide: 'home',
+        ownGoal: false,
+        player_goal: 0,
+        selected_player: '',
+        idTeamSelect: '',
+        openDialogPlayer: false,
+        teams: [
+          {id_team: 'lienquan', name: 'Liên Quân'},
+          {id_team: 'sixteen', name: 'Sixteen'}
+        ],
+        player_list: [],
+        player_edited_item: {},
+        start_date_picker: false,
+        end_date_picker: false,
+        start_time: null,
+        end_time: null,
+        start_time_picker: false,
+        end_time_picker: false,
         dialog: false,
         editedIndex: -1,
         editedItem: {
@@ -234,6 +450,31 @@
         }
         // addOrUpdatePlayer(this.editedItem.id, this.editedItem.data);
         this.close()
+      },
+      openScoreDialog(idTeam, side) {
+        console.log("Clicked" + idTeam);
+        getTeams(idTeam).then(data => this.player_list = data);
+        this.openDialogPlayer = true;
+        this.idTeamSelect = idTeam;
+        this.editSide = side;
+      },
+      addGoalByPlayer(){
+        console.log('addGoalByPlayer');
+        console.log(this.selected_player);
+        if ('home' === this.editSide){
+          this.editedItem.data.who_scored.home.push({
+            goal: this.player_goal,
+            id_player: this.selected_player.id,
+            name: this.selected_player.data.name
+          });
+        } else {
+          this.editedItem.data.who_scored.away.push({
+            goal: this.player_goal,
+            id_player: this.selected_player.id,
+            name: this.selected_player.data.name
+          });
+        }
+        this.openDialogPlayer = false
       }
     },
     async asyncData({app, params, error}) {
@@ -247,49 +488,52 @@
             data.push(doc.data());
           });
         }
+        console.log(data.length);
       } catch (e) {
         console.error(e)
       }
       return {
         games: data,
       };
-    },
-    async mounted() {
-      console.log("Mounted");
-      if (this.teamAvailable == null || this.teamAvailable.length === 0) {
-        //reload team info
-        console.log("Reload team data");
-        const ref = DB.collection('teams');
-        let snap, teams;
-        teams = [];
-        snap = await ref.get();
-        await snap.forEach(doc => {
-          let dataO = doc.data();
-          //get players
-          let players = [];
-          let refSubCol = doc.ref.collection('players');
-          let snapSubCol = refSubCol.get().then(snapSubCol => {
-            snapSubCol.forEach(docSub => {
-              players.push({
-                id: docSub.id,
-                name: docSub.data().name,
-                kit_number: docSub.data().kit_number
-              });
-            });
-            teams.push({
-              id: doc.id,
-              data: {
-                name: dataO.name,
-                players: players
-              }
+    }
+    // async created() {
+    // console.log("Created");
+
+    // }
+    // }
+  }
+
+  function reloadTeamData(_callback) {
+    //reload team info
+    console.log("Reload team data");
+    const ref = DB.collection('teams');
+    let snap, teams;
+    teams = [];
+
+    ref.get().then(snap => {
+      snap.forEach(doc => {
+        let dataO = doc.data();
+        //get players
+        let players = [];
+        let refSubCol = doc.ref.collection('players');
+        refSubCol.get().then(snapSubCol => {
+          snapSubCol.forEach(docSub => {
+            players.push({
+              id: docSub.id,
+              name: docSub.data().name,
+              kit_number: docSub.data().kit_number
             });
           });
+          teams.push({
+            id: doc.id,
+            data: {
+              name: dataO.name,
+              players: players
+            }
+          });
         });
-        console.log(teams);
-        this.setTeamList(teams);
-        console.log("Team available " + JSON.stringify(teams));
-        console.log("Team data reloaded");
-      }
-    }
+      })
+    });
+    _callback(teams);
   }
 </script>
