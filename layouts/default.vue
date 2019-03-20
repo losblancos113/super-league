@@ -55,6 +55,29 @@
       >
         <v-icon>menu</v-icon>
       </v-btn>
+      <v-spacer></v-spacer>
+      <v-menu open-on-hover top offset-y :nudge-width="100">
+        <template v-slot:activator="{ on }">
+          <v-toolbar-title v-on="on">
+            <v-avatar class="text-xs-right">
+              <img
+                :src="activeUser.photoURL"
+                :alt="activeUser.displayName"
+              >
+            </v-avatar>
+            <v-icon dark>arrow_drop_down</v-icon>
+          </v-toolbar-title>
+        </template>
+        <v-list>
+          <v-list-tile
+            v-for="(item, i) in user_menu"
+            :key="i"
+            @click="signOut"
+          >
+            <v-list-tile-title v-text="item.title"></v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
     </v-toolbar>
     <v-content>
       <v-container>
@@ -86,6 +109,7 @@
 </template>
 
 <script>
+  import {mapActions, mapGetters} from 'vuex';
   export default {
     data() {
       return {
@@ -98,11 +122,20 @@
           { icon: 'assignment_turned_in', title: 'Result', to: '/games/result' },
           { icon: 'rowing', title: 'Player Stats', to: '/players' }
         ],
+        user_menu: [
+          { icon: 'rowing', title: 'Logout', to: '/logout' }
+        ],
         miniVariant: false,
         right: true,
         rightDrawer: false,
         title: 'N3 Super League'
       }
+    },
+    methods: {
+      ...mapActions(['signOut'])
+    },
+    computed: {
+      ...mapGetters(['activeUser'])
     }
   }
 </script>

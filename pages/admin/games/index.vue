@@ -27,13 +27,13 @@
               <v-container grid-list-md>
                 <v-layout wrap>
                   <v-flex xs12 sm6 md6>
-                    <v-text-field disable v-model="editedItem.id" label="Id"></v-text-field>
+                    <v-text-field disabled v-model="editedItem.id" label="Id"></v-text-field>
                   </v-flex>
                   <v-flex xs12 sm6 md6>
-                    <v-text-field v-model="editedItem.id_season" label="Session"></v-text-field>
+                    <v-text-field v-model="editedItem.data.id_season" label="Session"></v-text-field>
                   </v-flex>
                   <v-flex xs12 sm12 md12>
-                    <v-switch color="blue darken-2" v-model="editedItem.is_completed" label="Completed"></v-switch>
+                    <v-switch color="blue darken-2" v-model="editedItem.data.is_completed" label="Completed"></v-switch>
                   </v-flex>
                   <v-flex xs12 sm6 md6>
                     <v-combobox
@@ -43,6 +43,7 @@
                       chips
                       label="Home"
                       return-object
+                      autocomplete="off"
                     >
                       <template slot="selection" slot-scope="data">
                         {{ data.item.name}}
@@ -64,6 +65,7 @@
                       chips
                       label="Away"
                       return-object
+                      autocomplete="off"
                     >
                       <template slot="selection" slot-scope="data">
                         {{ data.item.name}}
@@ -90,12 +92,12 @@
                     >
                       <v-text-field
                         slot="activator"
-                        v-model="editedItem.start"
+                        v-model="start_date"
                         label="Start date"
                         prepend-icon="event"
                         readonly
                       ></v-text-field>
-                      <v-date-picker v-model="editedItem.start" @input="start_date_picker = false"></v-date-picker>
+                      <v-date-picker v-model="start_date" @input="start_date_picker = false"></v-date-picker>
                     </v-menu>
                   </v-flex>
                   <v-flex xs12 sm6 md6>
@@ -175,14 +177,14 @@
                       </v-time-picker>
                     </v-dialog>
                   </v-flex>
-                  <v-container grid-list-md xs12 sm12 md12 v-if="editedItem.is_completed">
+                  <v-container grid-list-md xs12 sm12 md12 v-if="editedItem.data.is_completed">
                     <v-layout wrap>
                       <v-flex xs12 sm6 md6>
-                        <v-text-field min="0" type="number" v-model="editedItem.home_score"
+                        <v-text-field min="0" type="number" v-model="editedItem.data.home_score"
                                       label="Home score"></v-text-field>
                       </v-flex>
                       <v-flex xs12 sm6 md6>
-                        <v-text-field min="0" type="number" v-model="editedItem.away_score"
+                        <v-text-field min="0" type="number" v-model="editedItem.data.away_score"
                                       label="Away score"></v-text-field>
                       </v-flex>
                       <v-flex xs12 sm6 md6>
@@ -287,15 +289,30 @@
           <div slot="header">
             <v-layout align-center justify-space-between row fill-height>
               <v-flex xs4 sm4 md4 lg4 class="text-xs-right">{{ item.home.name }}</v-flex>
-              <v-flex xs4 sm4 md4 lg4 class="text-xs-center">{{ formatTimestamp(item.start) }}</v-flex>
+              <v-flex v-if="item.is_completed" xs4 sm4 md4 lg4 class="text-xs-center">{{ item.home_score }} - {{ item.away_score }}</v-flex>
+              <v-flex v-else xs4 sm4 md4 lg4 class="text-xs-center">{{ formatTimestamp(item.start) }}</v-flex>
               <v-flex xs4 sm4 md4 lg4 class="text-xs-left">{{ item.away.name }}</v-flex>
             </v-layout>
           </div>
           <v-card>
-            <v-card-text>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-              labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-              aliquip ex ea commodo consequat.
-            </v-card-text>
+            <v-container>
+              <v-layout wrap>
+                <v-flex xs6 sm6 md6 class="text-xs-left">
+                  <ul style="list-style-type:none">
+                    <li :key="j" v-for="(player_score, j) in item.who_scored.home">
+                      {{ player_score.name }} x {{ player_score.goal }}
+                    </li>
+                  </ul>
+                </v-flex>
+                <v-flex xs6 sm6 md6 class="text-xs-right">
+                  <ul style="list-style-type:none">
+                    <li :key="j" v-for="(player_score, j) in item.who_scored.away">
+                      {{ player_score.name }} x {{ player_score.goal }}
+                    </li>
+                  </ul>
+                </v-flex>
+              </v-layout>
+            </v-container>
           </v-card>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -307,6 +324,9 @@
   import {DB} from '@/services/fireinit';
   import {formatTimestamp, formatDate} from '@/ultilities/utils';
   import {getTeams} from '@/services/player-service';
+  import {addGameToSeason} from '@/services/game-service';
+  import moment from 'moment';
+  import * as firebase from 'firebase/app';
 
   // //indexedDB
   // if (!('indexedDB' in window)) {
@@ -347,6 +367,7 @@
         player_edited_item: {},
         start_date_picker: false,
         end_date_picker: false,
+        start_date: '',
         start_time: null,
         end_time: null,
         start_time_picker: false,
@@ -356,7 +377,7 @@
         editedItem: {
           id: '',
           data: {
-            id_season: '',
+            id_season: 'WecIXZjJsJG46boTWI2p',
             is_completed: false,
             stadium: '',
             start: new Date().toJSON(),
@@ -415,6 +436,26 @@
     watch: {
       dialog(val) {
         val || this.close()
+      },
+      start_date(val){
+        if (this.start_time !== '' && this.start_time){
+          console.log(this.start_date);
+          let time = this.start_time.split(':');
+          let momentObj = moment(this.start_date);
+          let date = momentObj.hour(time[0]).minute(time[1]).toDate();
+          this.editedItem.data.start = firebase.firestore.Timestamp.fromDate(date);
+          console.log(this.editedItem.data.start);
+        }
+      },
+      start_time(val){
+        if (this.start_date !== '' && this.start_date){
+          console.log(this.start_date);
+          let time = this.start_time.split(':');
+          let momentObj = moment(this.start_date);
+          let date = momentObj.hour(time[0]).minute(time[1]).toDate();
+          this.editedItem.data.start = firebase.firestore.Timestamp.fromDate(date);
+          console.log(this.editedItem.data.start);
+        }
       }
     },
     methods: {
@@ -448,7 +489,9 @@
         } else {
           this.games.push(this.editedItem)
         }
-        // addOrUpdatePlayer(this.editedItem.id, this.editedItem.data);
+        console.log(this.editedItem);
+        console.log(this.editedItem.data.start + ' ' + this.start_time);
+        addGameToSeason(this.editedItem.id, this.editedItem.data);
         this.close()
       },
       openScoreDialog(idTeam, side) {
@@ -474,11 +517,13 @@
             name: this.selected_player.data.name
           });
         }
+        this.player_goal = 0;
+        this.selected_player = '';
         this.openDialogPlayer = false
       }
     },
     async asyncData({app, params, error}) {
-      const ref = DB.collection('games').where('is_completed', '==', false);
+      const ref = DB.collection('games');
       let snap;
       let data = [];
       try {

@@ -38,7 +38,7 @@ export default {
     formatTimestamp,
   },
   async asyncData({app, params, error}){
-    const ref = DB.collection('games').where('is_completed', '==', false);
+    const ref = DB.collection('games').where('is_completed', '==', false).orderBy('start');
     let snap;
     let data = [];
     try {

@@ -1,7 +1,5 @@
-import * as firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/firestore';
-import 'firebase/database';
+const firebase = require('firebase');
+require('firebase/firestore');
 if (!firebase.apps.length) {
   firebase.initializeApp({
     apiKey: "AIzaSyDHRV643GlgRPO8XORc0uJ6WJ6NE4xP9Dw",
@@ -34,7 +32,4 @@ db.enablePersistence()
 if (!firebase.apps.length) {
   firebase.initializeApp(config)
 }
-export const GoogleProvider = new firebase.auth.GoogleAuthProvider();
-export const auth = firebase.auth();
-export const DB = db;
-export default firebase;
+module.exports.DB = db;

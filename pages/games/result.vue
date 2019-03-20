@@ -18,7 +18,10 @@
            <div slot="header">
              <v-layout align-center justify-space-between row fill-height>
                <v-flex xs4 sm4 md4 lg4 class="text-xs-right">{{ item.home.name }}</v-flex>
-               <v-flex xs4 sm4 md4 lg4 class="text-xs-center">{{ item.home_score }} - {{ item.away_score }}</v-flex>
+               <v-flex xs4 sm4 md4 lg4 class="text-xs-center">
+                 <div>{{ formatTimestamp(item.start) }}</div>
+                 <div>{{ item.home_score }} - {{ item.away_score }}</div>
+               </v-flex>
                <v-flex xs4 sm4 md4 lg4 class="text-xs-left">{{ item.away.name }}</v-flex>
              </v-layout>
            </div>
@@ -78,7 +81,7 @@ export default {
     formatTimestamp,
   },
   async asyncData({app, params, error}){
-    const ref = DB.collection('games').where('is_completed', '==', true);
+    const ref = DB.collection('games').where('is_completed', '==', true).orderBy('start', 'desc');
     let snap;
     let data = [];
     try {

@@ -68,6 +68,7 @@ export default {
     }
   },
   async asyncData({app, params, error}) {
+    console.log("start index");
     const ref = DB.collection('seasons').where('active', '==', true);
     let snap,data;
     try {
@@ -75,10 +76,10 @@ export default {
       if (snap.size > 0) {
         data = snap.docs[0].data();
       }
-      console.log(data);
       // let idTeam = data.teams[0].id_team.data;
       // console.log(idTeam);
     } catch (e) {
+      console.log("ERROR "+e);
       console.error(e)
     }
     return {
